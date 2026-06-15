@@ -1,0 +1,397 @@
+================================================================================
+                        AURA COMPANION INTERFACE
+                         PROJECT SUMMARY
+================================================================================
+
+PROJECT OVERVIEW
+----------------
+AURA (Adaptive User-Responsive Agent) is an AI companion app built with
+React Native (Expo SDK 56). It features a "Neo-Kawaii Cyberpunk" design
+aesthetic — think dark glassmorphism meets neon accents. The app is designed
+to showcase an AI companion's emotional state, personality, memories, activity
+history, minigames, and analytics.
+
+Tech Stack:
+  - Framework:      React Native 0.85.3 via Expo SDK 56
+  - Language:       TypeScript
+  - Navigation:     @react-navigation/native v7 (Bottom Tabs + Native Stack)
+  - Animations:     react-native-reanimated v4.3.1
+  - Fonts:          Sora, Inter, JetBrains Mono (via @expo-google-fonts)
+  - Icons:          @expo/vector-icons (MaterialCommunityIcons)
+
+
+================================================================================
+                        DESIGN SYSTEM
+================================================================================
+
+Theme File: src/theme/theme.ts
+
+COLORS
+  Background:       #050508  (Deep Space Black)
+  Surface:          #0A0F1E  (used at 60% opacity for glass cards)
+  Electric Teal:    #00f2ff  (primary accent, used for buttons, highlights)
+  Hot Pink:         #ff007f  (secondary accent, used for emotions, hearts)
+  Neon Purple:      #bd00ff  (tertiary accent, used for personality/memory)
+  Text Primary:     #e5e1e7  (light grey-white)
+  Text Secondary:   #b9cacb  (muted teal-grey)
+  Error:            #ffb4ab
+
+TYPOGRAPHY
+  Display Large:    Sora 800 ExtraBold, 42px  — used for big hero text
+  Headline Large:   Sora 700 Bold, 32px       — section headers
+  Headline Mobile:  Sora 700 Bold, 24px       — mobile-friendly headers
+  Title Medium:     Sora 600 SemiBold, 20px   — card titles
+  Body Large:       Inter 400 Regular, 16px   — paragraph text
+  Body Small:       Inter 400 Regular, 14px   — descriptions
+  Label Caps:       JetBrains Mono 700, 12px  — uppercase labels, nav items
+  Data Numbers:     JetBrains Mono 500, 18px  — stats, metrics
+
+SPACING
+  Unit: 4px | Gutter: 16px | Mobile Margin: 20px | Card Gap: 12px
+
+BORDER RADII
+  Cards: 16px | Buttons: 24px | Pills/Chips: 9999px
+
+
+================================================================================
+                        APP NAVIGATION STRUCTURE
+================================================================================
+
+File: src/navigation/index.tsx
+
+The app uses a STACK navigator wrapping a BOTTOM TAB navigator:
+
+  RootStack (NativeStackNavigator)
+  ├── MainTabs (BottomTabNavigator)   ← the 5 main tabs
+  │   ├── Home           (tab icon: robot-outline)
+  │   ├── Emotions       (tab icon: heart-pulse)
+  │   ├── Personality    (tab icon: hexagon-outline)
+  │   ├── Timeline       (tab icon: timeline-clock-outline)
+  │   └── Memory         (tab icon: database-outline)
+  │
+  ├── Arcade             ← full-screen modal (no tab)
+  └── Report             ← full-screen modal (no tab)
+
+Every screen has cross-navigation links at the bottom so users can hop
+between any page. The tab bar uses a semi-transparent dark background
+with a teal top border to achieve the glassmorphism effect.
+
+
+================================================================================
+                        SCREEN DETAILS
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 1: HOME (Dashboard)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/HomeScreen.tsx
+Tab: First tab ("Home")
+
+Purpose:
+  The main dashboard — the first thing the user sees when opening the app.
+
+Features:
+  • Pulsating AURA Orb — a continuously animating circle in the center that
+    scales and fades using Reanimated's withRepeat + withSequence.
+  • Status Cards — two glass-styled cards showing "Current Mood" and
+    "System Sync", each tappable to navigate to Emotions or Personality.
+  • Quick Stats Row — three stat boxes (Events Today, Memories, Resonance)
+    that link to Timeline, Memory, and Report respectively.
+  • Action Buttons — "ENTER ARCADE" (primary CTA) and "RESONANCE REPORT"
+    (secondary outlined button).
+
+Animations:
+  - Orb: continuous pulse (scale 1 → 1.15, opacity 0.3 → 0.7)
+  - All sections: staggered FadeInDown entering animations (100ms–700ms delay)
+
+Dummy Data:
+  - Current Mood: "Energetic ⚡" (hardcoded)
+  - System Sync: "98.4%" (hardcoded)
+  - Events Today: "24" (hardcoded)
+  - Memories count: "42" (hardcoded)
+  - Resonance score: "94" (hardcoded)
+
+Navigation Links To:
+  → Emotions (tap mood card)
+  → Personality (tap sync card)
+  → Timeline (tap events stat)
+  → Memory (tap memories stat)
+  → Report (tap resonance stat or "RESONANCE REPORT" button)
+  → Arcade (tap "ENTER ARCADE" button)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 2: EMOTIONS (Emotional State)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/EmotionsScreen.tsx
+Tab: Second tab ("Emotions")
+
+Purpose:
+  Displays AURA's real-time emotional analysis with animated bar charts.
+
+Features:
+  • Primary Emotion Card — large centered card with a heart-pulse icon
+    showing the dominant emotion (e.g., "Euphoric").
+  • Animated Bar Charts — four horizontal bars (Joy, Curiosity, Empathy,
+    Anxiety) that fill in with a delayed animation when the screen loads.
+    Each bar is powered by Reanimated's useSharedValue and withTiming.
+  • Related Insights Links — bottom section linking to Personality, Timeline,
+    and Report.
+
+Animations:
+  - Bars: width animates from 0% → target% with staggered delays (500–1100ms)
+  - Sections: FadeInDown entering animations
+
+Dummy Data:
+  - Core emotion: "Euphoric" (hardcoded)
+  - Joy: 92%, Curiosity: 85%, Empathy: 78%, Anxiety: 12%
+
+Navigation Links To:
+  → Personality (via "View Personality Traits" link)
+  → Timeline (via "View Mood Timeline" link)
+  → Report (via "Full Resonance Report" link)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 3: PERSONALITY (Core Traits)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/PersonalityScreen.tsx
+Tab: Third tab ("Personality")
+
+Purpose:
+  Shows AURA's personality trait cards — how the AI companion behaves.
+
+Features:
+  • Trait Cards — four glass-styled cards, each with:
+      - An icon in a tinted circle
+      - Trait name (e.g., "Playful")
+      - Level indicator (e.g., "LVL 9")
+      - Description text
+  • Explore More Links — bottom section linking to Emotions, Memory, Arcade.
+
+Animations:
+  - Each card: staggered FadeInDown (200ms–650ms delay)
+
+Dummy Data:
+  - Playful (LVL 9), Analytical (LVL 7), Empathetic (LVL 8), Rebellious (LVL 3)
+  - All descriptions are placeholder text
+
+Navigation Links To:
+  → Emotions (via "Emotional Analysis" link)
+  → Memory (via "Memory Database" link)
+  → Arcade (via "Play in Arcade" link)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 4: TIMELINE (Activity Log)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/TimelineScreen.tsx
+Tab: Fourth tab ("Timeline")
+
+Purpose:
+  A scrollable activity log showing AURA's recent interactions with timestamps.
+
+Features:
+  • Timeline Events — vertical timeline with:
+      - Time stamps on the left (e.g., "10:42 AM")
+      - Circular icon nodes with a connecting line between them
+      - Event cards on the right with title + description
+  • Five events covering a full day (morning greeting, mood shift,
+    arcade session, memory stored, system sync).
+  • Quick Links — bottom section linking to Emotions, Memory, Report.
+
+Animations:
+  - Each event: FadeInLeft with staggered delays (200ms–1000ms) — slides in
+    from the left for a timeline feel
+
+Dummy Data:
+  - All 5 timeline events (times, titles, descriptions) are hardcoded
+
+Navigation Links To:
+  → Emotions (via "Current Emotions" link)
+  → Memory (via "Stored Memories" link)
+  → Report (via "Full Resonance Report" link)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 5: MEMORY (Long-Term Storage)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/MemoryScreen.tsx
+Tab: Fifth tab ("Memory")
+
+Purpose:
+  Displays what AURA "remembers" about the user — likes, facts, and goals
+  organized as colorful chips.
+
+Features:
+  • Summary Stats Card — two big numbers ("42 Facts Stored", "3d Last Sync")
+  • Memory Chips — organized into three categories:
+      - Likes & Preferences (pink border): "Cyberpunk Aesthetics",
+        "Lo-Fi Music", "Late Night Coding"
+      - Known Facts (teal border): "Works as a Developer",
+        "Lives in Tokyo time zone"
+      - Active Goals (purple border): "Finish AURA project",
+        "Drink more water"
+  • Each chip has a category icon (heart, info, flag) and dashed border
+    to indicate dummy data.
+  • Related Links — bottom section linking to Personality, Timeline, Emotions.
+
+Animations:
+  - Each section: staggered FadeInDown (200ms–600ms delay)
+
+Dummy Data:
+  - All chips, stats, and categories are hardcoded
+
+Navigation Links To:
+  → Personality (via "Personality Traits" link)
+  → Timeline (via "Activity Timeline" link)
+  → Emotions (via "Emotional State" link)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 6: ARCADE (Minigames)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/ArcadeScreen.tsx
+Navigation: Full-screen stack screen (not a tab — accessed via buttons/links)
+
+Purpose:
+  A gamified screen showcasing neural minigames the user can play with AURA.
+
+Features:
+  • Back Button — chevron-left to go back to previous screen
+  • Game Cards — three game entries, each with:
+      - Game icon in a dark rounded box
+      - Game title + description
+      - "PLAY" button (currently non-functional placeholder)
+  • Games listed:
+      1. Neon Reflex — reaction time test
+      2. Memory Match — pattern matching
+      3. Cipher Break — decoding encrypted messages
+  • Highscores Card — stats table showing XP for each game
+  • More Links — bottom section linking to Report, Personality, Home
+
+Animations:
+  - Each game card: staggered FadeInDown (300ms–600ms delay)
+
+Dummy Data:
+  - All 3 games (names, descriptions) are hardcoded
+  - Highscores: Neon Reflex 1,240 XP, Memory Match 890 XP, Cipher Break 560 XP
+  - PLAY buttons don't trigger any game logic yet
+
+Navigation Links To:
+  → Report (via "View Resonance Report" link)
+  → Personality (via "Personality Profile" link)
+  → Home (via "Back to Dashboard" link)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SCREEN 7: REPORT (Resonance Analytics)
+────────────────────────────────────────────────────────────────────────────────
+File: src/screens/ReportScreen.tsx
+Navigation: Full-screen stack screen (not a tab — accessed via buttons/links)
+
+Purpose:
+  A detailed analytics dashboard showing the user's relationship score with AURA.
+
+Features:
+  • Back Button — chevron-left to go back
+  • Resonance Score Circle — large circular score display (94/100) with a
+    glowing teal ring (iOS shadow glow effect).
+  • Description — "High Resonance" with an explanation.
+  • Metrics Grid — four stat cards in a 2x2 grid:
+      1. Total Exchanges: 1,042
+      2. Active Time: 42h 15m
+      3. Neural Depth: Level 12
+      4. Avg. Sentiment: Optimistic
+  • Export Button — "EXPORT LOGS" CTA (non-functional placeholder)
+  • Explore Links — bottom section linking to Emotions, Timeline, Arcade, Home
+
+Animations:
+  - Score circle: FadeInUp with spring-like delay
+  - Metrics grid: FadeInDown with delay
+  - All sections use staggered entering animations
+
+Dummy Data:
+  - Resonance score: 94/100
+  - All 4 metrics are hardcoded
+  - Export button is non-functional
+
+Navigation Links To:
+  → Emotions (via "Emotional Analysis" link)
+  → Timeline (via "Activity Timeline" link)
+  → Arcade (via "Enter Arcade" link)
+  → Home (via "Back to Dashboard" link)
+
+
+================================================================================
+                     DUMMY DATA MARKERS
+================================================================================
+
+All dummy/placeholder data in the codebase is marked in TWO ways:
+
+  1. DASHED BORDERS — Every component displaying fake data has a dashed
+     border style (via the `highlightDummy` or `styles.highlightDummy` class).
+     This creates a visible visual indicator on-screen that the data is fake.
+
+  2. CODE COMMENTS — Each hardcoded value has a comment above it:
+     // TODO: DUMMY_DATA - Replace with <description of what real data goes here>
+
+To find ALL dummy data locations, search the codebase for:
+  grep -rn "DUMMY_DATA" src/
+
+
+================================================================================
+                     FILE STRUCTURE
+================================================================================
+
+aura-app/
+├── App.tsx                          # Entry point — loads fonts, renders nav
+├── index.js                         # Expo entry registration
+├── babel.config.js                  # Reanimated plugin config
+├── tsconfig.json                    # TypeScript config (esModuleInterop)
+├── app.json                         # Expo config
+├── package.json                     # Dependencies
+│
+├── src/
+│   ├── theme/
+│   │   └── theme.ts                 # Complete design system (colors, fonts, spacing)
+│   │
+│   ├── navigation/
+│   │   └── index.tsx                # Tab + Stack navigator setup
+│   │
+│   └── screens/
+│       ├── HomeScreen.tsx           # Dashboard with pulsing orb
+│       ├── EmotionsScreen.tsx       # Emotion bars + sentiment display
+│       ├── PersonalityScreen.tsx    # Trait cards grid
+│       ├── TimelineScreen.tsx       # Activity timeline with connecting lines
+│       ├── MemoryScreen.tsx         # Memory chips (likes, facts, goals)
+│       ├── ArcadeScreen.tsx         # Minigames list + highscores
+│       └── ReportScreen.tsx         # Analytics dashboard with score circle
+│
+└── assets/                          # App icons, splash screen images
+
+
+================================================================================
+                     HOW TO RUN
+================================================================================
+
+  1. Install dependencies:    npm install
+  2. Start dev server:        npx expo start -c
+  3. Run on iOS simulator:    Press "i" in terminal
+  4. Run on Android:          Press "a" in terminal
+  5. Run on physical device:  Scan QR code with Expo Go app
+
+
+================================================================================
+                     NEXT STEPS (TODO)
+================================================================================
+
+  • Replace all DUMMY_DATA with real backend API calls
+  • Implement actual minigame logic in Arcade (Neon Reflex, Memory Match, etc.)
+  • Wire up the "EXPORT LOGS" button on the Report screen
+  • Add push notifications for mood shifts and daily check-ins
+  • Implement user authentication / session management
+  • Add settings screen for customization (theme toggle, notification prefs)
+  • Add onboarding flow for first-time users
+
+================================================================================
